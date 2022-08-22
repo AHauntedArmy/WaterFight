@@ -60,7 +60,6 @@ namespace WaterFight.GameMode
         {
             if (GorillaGameManager.instance is WaterFightGameMode waterFIghtGM) {
                 waterFightGameMode = waterFIghtGM;
-                Debug.Log("set water fight gamemode");
             
             } else {
                 Debug.LogError("WaterFight: Instantiated networked water gun for the wrong game type!!");

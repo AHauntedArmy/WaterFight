@@ -73,6 +73,7 @@ namespace WaterFight
 
             prefabManager?.AttachPrefabs();
             prefabManager?.WaterGunCosmetic?.SetActive(false);
+
             inRoom = true;
         }
 

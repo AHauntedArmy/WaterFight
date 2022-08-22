@@ -23,8 +23,8 @@ namespace WaterFight.GameMode.WaterGun
 
         private const float DecayRate = MaxSpeed / DecaySeconds;
         private const float DecaySeconds = 15f;
-        private const float PressureModifier = 5f;
-        public const float MaxSpeed = 40f;
+        private const float PressureModifier = 7.5f;
+        public const float MaxSpeed = 20f;
         private float waterSpeed = 0f;
 
         public float WaterSpeed => waterSpeed;

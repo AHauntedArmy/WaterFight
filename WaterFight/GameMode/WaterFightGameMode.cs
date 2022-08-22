@@ -10,12 +10,14 @@ using Photon.Pun;
 using Photon.Realtime;
 using PhotonHashTable = ExitGames.Client.Photon.Hashtable;
 using Utilla;
+using Photon.Pun.UtilityScripts;
 
 namespace WaterFight.GameMode
 {
     internal class WaterFightGameMode : GorillaGameManager, IPunObservable
     {
-        private const float SlipModifier = 0.15f;
+        private const float liveDamage = 0.25f;
+        private const float deadDamage = 0.15f;
         public const string GameModeKey = "WFGM";
         private List<int> playersMissingMod = new List<int>();
 
@@ -28,6 +30,7 @@ namespace WaterFight.GameMode
         private float jumpMultiplyerDelta;
 
         private bool roundOver = false;
+        private float SlipModifier = 0.17f;
         private float roundEndCooldown = 5f;
 
         public override string GameMode() => "WATERFIGHT";
@@ -38,6 +41,7 @@ namespace WaterFight.GameMode
             // Debug.Log("this gameobject enabled " + this.gameObject.activeSelf);
             base.Awake();
 
+            SlipModifier -= GorillaLocomotion.Player.Instance.defaultSlideFactor;
             fastJumpLimit = 8.5f;
             slowJumpLimit = 6.5f;
             fastJumpMultiplier = 1.3f;
@@ -51,7 +55,7 @@ namespace WaterFight.GameMode
                     playersMissingMod.Add(player.ActorNumber);
                 
                 } else {
-                    Debug.Log($"player {player.NickName} has the mod installed");
+                    // Debug.Log($"player {player.NickName} has the mod installed");
                 }
 
                 if (!playerHealth.ContainsKey(player.ActorNumber)) {
@@ -64,27 +68,27 @@ namespace WaterFight.GameMode
                 Debug.LogError("game manager is missing a photonview");
             
             } else if (photonView.ObservedComponents.Contains(this)) {
-                Debug.Log("game manager is an observed component");
+               // Debug.Log("game manager is an observed component");
             
             } else {
-                Debug.Log("add game manager to observed components");
+                // Debug.Log("add game manager to observed components");
                 view.ObservedComponents.Add(this);
             }
         }
 
         public void Start()
         {
-            Debug.Log("Game manager start");
+            // Debug.Log("Game manager start");
 
             var view = this.photonView;
             if (view == null) {
                 Debug.LogError("game manager is missing a photonview");
 
             } else if (photonView.ObservedComponents.Contains(this)) {
-                Debug.Log("game manager is an observed component");
+                // Debug.Log("game manager is an observed component");
 
             } else {
-                Debug.LogError("game manager is not an observed component");
+                // Debug.LogError("game manager is not an observed component");
             }
         }
 
@@ -151,7 +155,7 @@ namespace WaterFight.GameMode
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
-            Debug.Log("on player left room");
+            // Debug.Log("on player left room");
             base.OnPlayerLeftRoom(otherPlayer);
 
             try {
@@ -186,7 +190,7 @@ namespace WaterFight.GameMode
         {
             Debug.Log("water fight game mode rpc running");
 
-            if (!this.photonView.IsMine || roundOver | !ModRunning) {
+            if (!this.photonView.IsMine || roundOver || !ModRunning) {
                 // Debug.Log("not my photonview or round is over");
                 // Debug.Log("round over is " + roundOver);
                 return;
@@ -205,9 +209,8 @@ namespace WaterFight.GameMode
                 return;
             }
 
-            float damage = GetPlayerHealth(info.Sender.ActorNumber) < 1f ? 0.25f : 0.1f;
-            // Debug.Log("attempting to add damage");
-            if (AddDamage(target.ActorNumber, damage)) {
+            float damage = GetPlayerHealth(info.Sender.ActorNumber) < 1f ? liveDamage : deadDamage;
+            if (AddDamage(target.ActorNumber, damage)) { 
                 targetPlayer.RPC("PlayTagSound", RpcTarget.All, 0, 0.25f);
             }
         }
@@ -249,7 +252,7 @@ namespace WaterFight.GameMode
 
         public float GetPlayerHealth(int actorNumber)
         {
-            float health = 0f;
+            float health = 1f;
             try {
                 if (playerHealth.ContainsKey(actorNumber)) {
                     health = playerHealth[actorNumber];
@@ -273,10 +276,9 @@ namespace WaterFight.GameMode
                         health = Mathf.Clamp(health + damage, 0f, 1f);
                         playerHealth[actorNumber] = health;
                         result = true;
-                        Debug.Log("new player health is " + health);
+                        // Debug.Log("new player health is " + health);
 
                         CheckRoundEnd();
-
                     }
                 }
 
@@ -354,10 +356,10 @@ namespace WaterFight.GameMode
                 return false;
             }
 
-            if (playerHealth != null && playerHealth.TryGetValue(targetPlayer.ActorNumber, out float health)) {
-                if (health < 1f) {
-                    return true;
-                }
+            float health = GetPlayerHealth(targetPlayer.ActorNumber);
+
+            if (health < 1f) {
+                return true;
             }
 
             return false;
