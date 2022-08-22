@@ -25,7 +25,6 @@ namespace WaterFight.GameMode.WaterGun
         private const float InterpolateSpeed = 0.1f;
         private const float MaxYPosition = 0.0225f;
         private const float StaticXPosition = -0.0024f;
-        private const float Percentage = 1f / WaterStreamController.MaxSpeed;
 
         void Awake()
         {
@@ -84,7 +83,7 @@ namespace WaterFight.GameMode.WaterGun
             } else {
                 Vector3 localPosition = this.transform.localPosition;
                 float currentY = localPosition.y;
-                float pressurePercent = Percentage * waterController.WaterSpeed;
+                float pressurePercent = WaterStreamController.PressurePercentage * waterController.WaterSpeed;
                 currentY = Mathf.MoveTowards(currentY, MaxYPosition * pressurePercent, InterpolateSpeed * Time.deltaTime);
                 localPosition.y = currentY;
                 this.transform.localPosition = localPosition;

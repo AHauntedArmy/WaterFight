@@ -16,12 +16,21 @@ namespace WaterFight.GameMode.WaterGun
     {
         [SerializeField] private WaterStreamController waterController = null;
         [SerializeField] private PreasurePumpController waterPump = null;
+
         [SerializeField] private Renderer gunRenderer = null;
+
         [SerializeField] private Material waterTankMat = null;
         [SerializeField] private Color tankDeadColour;
         [SerializeField] private Color tankLiveColour;
 
+        [SerializeField] private Material gunBodyMaterial = null;
+        [SerializeField] private Color shootColor;
+        [SerializeField] private Color shootCooldowncolor;
+
 #if GAME
+
+        private const float HitCooldown = 1f;
+        private static float lastHitTime = 0f; // only local player can send hit events, other instances of this class need to know this value
 
         // bitmask to save gun state to cut down on data and messages sent
         private static class GunState
@@ -33,9 +42,11 @@ namespace WaterFight.GameMode.WaterGun
         private byte gunState = 0;
         private bool inputsAssigned = false;
         private bool isLocalPlayer = false;
+        private bool shootCooldown = false;
 
 
         public bool IsLocalPlayer => isLocalPlayer;
+        public bool ShootCooldown => shootCooldown;
         public WaterStreamController WaterController => waterController;
         public PreasurePumpController WaterPump => waterPump;
 
@@ -51,7 +62,9 @@ namespace WaterFight.GameMode.WaterGun
             }
 
             waterTankMat = UnityEngine.Object.Instantiate(waterTankMat);
+            gunBodyMaterial = UnityEngine.Object.Instantiate(gunBodyMaterial);
             renderMats[3] = waterTankMat;
+            renderMats[1] = gunBodyMaterial;
 
             // assign the new material instance back to the renderer
             gunRenderer.materials = renderMats;
@@ -104,6 +117,21 @@ namespace WaterFight.GameMode.WaterGun
             }
         }
 
+        void Update()
+        {
+            if (shootCooldown && Time.time > lastHitTime) {
+                gunBodyMaterial.color = shootColor;
+                shootCooldown = false;
+            }
+        }
+
+        public void StartShootCooldown()
+        {
+            lastHitTime = Time.time + HitCooldown;
+            gunBodyMaterial.color = shootCooldowncolor;
+            shootCooldown = true;
+
+        }
         void ShootTrigger(object sender, InputEventArgs inputs)
         {
             if (inputs.Pressed) {
@@ -182,5 +210,8 @@ namespace WaterFight.GameMode.WaterGun
             } catch { }
 #endif
         }
+#if GAME
+       
+#endif
     }
 }

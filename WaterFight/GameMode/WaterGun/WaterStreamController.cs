@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Oculus.Platform;
+using Photon.Pun;
+using System;
 using System.Collections.Generic;
 using System.Security;
 using System.Text;
@@ -21,10 +23,6 @@ namespace WaterFight.GameMode.WaterGun
         private List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>();
         private ParticleSystem.MainModule mainParticleSettings;
 
-        private const float DecayRate = MaxSpeed / DecaySeconds;
-        private const float DecaySeconds = 15f;
-        private const float PressureModifier = 7.5f;
-        public const float MaxSpeed = 20f;
         private float waterSpeed = 0f;
 
         public float WaterSpeed => waterSpeed;
@@ -118,8 +116,40 @@ namespace WaterFight.GameMode.WaterGun
         public void AddWaterPressure(float pressure) => SetWaterPressure(waterSpeed + (pressure * PressureModifier * Time.deltaTime));
         public void SetWaterPressure(float pressure)
         {
-            waterSpeed = Mathf.Min(pressure, MaxSpeed);
+            waterSpeed = Mathf.Min(pressure, currentMaxSpeed);
             mainParticleSettings.startSpeed = waterSpeed;
+        }
+
+        // static stuff
+        private const float DecaySeconds = 15f;
+        private const float MaxSpeed = 20f;
+        private const float MaxPressureModifier = 7f;
+        private static float PressureModifier = 2.5f;
+        private static float DecayRate = MaxSpeed / DecaySeconds;
+        private static float currentMaxSpeed = MaxSpeed;
+        private static float pressurePercentage = 1f / WaterStreamController.MaxSpeed;
+        public static float PressurePercentage => pressurePercentage;
+
+        // can't think of a good way of doing this once for all instances on events instead of checking each frame
+        public static void SetMaxWaterPressure(WaterFightGameMode instance)
+        {
+            if (instance == null) {
+                return;
+            }
+
+            float roomSizeSpeedModifier = 12f;
+            float roomSizePressureModifier = 4.5f;
+            float roomSizePercent = (1f / 10f) * (float)PhotonNetwork.PlayerList.Length;
+
+            roomSizeSpeedModifier *= roomSizePercent;
+            roomSizePressureModifier *= roomSizePercent;
+
+            currentMaxSpeed = MaxSpeed - roomSizeSpeedModifier;
+            PressureModifier = MaxPressureModifier - roomSizePressureModifier;
+            // Debug.Log("max pressure " + currentMaxSpeed);
+
+            pressurePercentage = 1f / currentMaxSpeed;
+            DecayRate = currentMaxSpeed / DecaySeconds;
         }
 #endif
     }

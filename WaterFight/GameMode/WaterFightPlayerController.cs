@@ -19,9 +19,6 @@ namespace WaterFight.GameMode
         private WaterGunManager waterGunManager;
         private Player myOwner;
 
-        private const float HitCooldown = 0.5f;
-        private static float lastHitTime = 0f; // only local player can send hit events, other instances of this class need to know this value
-
         [SerializeField] private GameObject rightHandOffsetReference = null;
         [SerializeField] private GameObject leftHandOffsetReference = null;
 
@@ -86,11 +83,9 @@ namespace WaterFight.GameMode
             if (waterFightGameMode != null && gunManager.IsLocalPlayer) {
                 // Debug.Log("attempting to send hit event");
 
-                // cooldown to prevent network event spam
-                float time = Time.time;
-                if (time > lastHitTime && waterFightGameMode.CanHitTarget(this.myOwner)) {
+                if (!gunManager.ShootCooldown && waterFightGameMode.CanHitTarget(this.myOwner)) {
                    //  Debug.Log("sending hit event");
-                    lastHitTime = time + HitCooldown;
+                    gunManager.StartShootCooldown();
                     Vector3 hitPoint = this.gameObject.transform.position;
                     waterFightGameMode.photonView.RPC("ReportTagRPC", RpcTarget.MasterClient, new object[] { this.myOwner, hitPoint.x, hitPoint.y, hitPoint.z });
                 }

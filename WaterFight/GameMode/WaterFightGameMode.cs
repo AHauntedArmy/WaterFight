@@ -11,6 +11,7 @@ using Photon.Realtime;
 using PhotonHashTable = ExitGames.Client.Photon.Hashtable;
 using Utilla;
 using Photon.Pun.UtilityScripts;
+using WaterFight.GameMode.WaterGun;
 
 namespace WaterFight.GameMode
 {
@@ -74,6 +75,8 @@ namespace WaterFight.GameMode
                 // Debug.Log("add game manager to observed components");
                 view.ObservedComponents.Add(this);
             }
+
+            WaterStreamController.SetMaxWaterPressure(this);
         }
 
         public void Start()
@@ -151,6 +154,8 @@ namespace WaterFight.GameMode
                     playerHealth.Add(newPlayer.ActorNumber, 0f);
                 }
             }
+
+            WaterStreamController.SetMaxWaterPressure(this);
         }
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -170,6 +175,8 @@ namespace WaterFight.GameMode
                 if(photonView.IsMine) {
                     CheckRoundEnd();
                 }
+
+                WaterStreamController.SetMaxWaterPressure(this);
             } catch { }
         }
 
