@@ -195,7 +195,7 @@ namespace WaterFight.GameMode
         [PunRPC]
         public void ReportTagRPC(Player target, float x, float y, float z, PhotonMessageInfo info)
         {
-            Debug.Log("water fight game mode rpc running");
+            // Debug.Log("water fight game mode rpc running");
 
             if (!this.photonView.IsMine || roundOver || !ModRunning) {
                 // Debug.Log("not my photonview or round is over");
