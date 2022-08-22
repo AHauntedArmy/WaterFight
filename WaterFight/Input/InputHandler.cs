@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.XR;
 
 using Utilla;
@@ -27,7 +28,7 @@ namespace WaterFight.Input
 
         public void UpdateAndSendEvent()
         {
-            if(!controller.isValid) {
+            if (!controller.isValid) {
                 controller = InputDevices.GetDeviceAtXRNode(controllerNode);
             }
 
@@ -35,62 +36,72 @@ namespace WaterFight.Input
                 events?.InvokeGripEvent(new InputEventArgs(grip));
             }
 
-            if (ProcessInputs(ref trigger, CommonUsages.triggerButton)) {
+            if (ProcessInputsDynamic(ref trigger, CommonUsages.triggerButton, CommonUsages.trigger)) {
                 // Debug.Log("invoking trigger event");
                 events?.InvokeTriggerEvent(new InputEventArgs(trigger));
             }
         }
 
 
-        private bool ProcessInputs(ref InputState buttonState, InputFeatureUsage<bool> button)
+        private bool ProcessInputs(ref InputState buttonState, in InputFeatureUsage<bool> button)
+        {
+            if (controller.TryGetFeatureValue(button, out bool pressed)) {
+                return UpdatebuttonState(ref buttonState, pressed);
+
+            } else {
+                return UpdatebuttonState(ref buttonState, false);
+            }
+        }
+
+        private bool ProcessInputsDynamic(ref InputState buttonState, in InputFeatureUsage<bool> button, in InputFeatureUsage<float> buttonValue)
+        {
+            if (controller.TryGetFeatureValue(button, out bool pressed) && pressed && controller.TryGetFeatureValue(buttonValue, out float position) && position > 0.8f) {
+                return UpdatebuttonState(ref buttonState, pressed);
+
+            } else {
+                return UpdatebuttonState(ref buttonState, false);
+            }
+        }
+
+        private bool UpdatebuttonState(ref InputState buttonState, in bool state)
         {
             bool stateChange = false;
-            if (controller.TryGetFeatureValue(button, out bool result)) {
-                if (result) {
-                    if (!buttonState.pressed && !buttonState.held) {
-                        buttonState.pressed = true;
-                        buttonState.held = false;
-                        buttonState.released = false;
 
-                        stateChange = true;
+            if (state) {
+                if (!buttonState.pressed && !buttonState.held) {
+                    buttonState.pressed = true;
+                    buttonState.held = false;
+                    buttonState.released = false;
 
-                    } else if (buttonState.pressed && !buttonState.held) {
-                        buttonState.pressed = false;
-                        buttonState.held = true;
-                        buttonState.released = false;
+                    stateChange = true;
 
-                        
-                        /* currently no use for this to fire each frame while held, might in the future
-                        stateChange = true;
+                } else if (buttonState.pressed && !buttonState.held) {
+                    buttonState.pressed = false;
+                    buttonState.held = true;
+                    buttonState.released = false;
+
+
+                    /* currently no use for this to fire each frame while held, might in the future
+                    stateChange = true;
                     
-                    } else if (!buttonState.pressed && buttonState.held) {
-                        stateChange = true;
-                        */
-                    }
-                
-                } else {
-                    if (buttonState.pressed || buttonState.held) {
-                        buttonState.pressed = false;
-                        buttonState.held = false;
-                        buttonState.released = true;
-
-                        stateChange = true;
-                    
-                    } else if (buttonState.released == true) {
-                        buttonState.pressed = false;
-                        buttonState.held = false;
-                        buttonState.released = false;
-                    }
+                } else if (!buttonState.pressed && buttonState.held) {
+                    stateChange = true;
+                    */
                 }
 
             } else {
                 if (buttonState.pressed || buttonState.held) {
-                    stateChange = true;
-                }
+                    buttonState.pressed = false;
+                    buttonState.held = false;
+                    buttonState.released = true;
 
-                buttonState.pressed = false;
-                buttonState.held = false;
-                buttonState.released = true;
+                    stateChange = true;
+
+                } else if (buttonState.released == true) {
+                    buttonState.pressed = false;
+                    buttonState.held = false;
+                    buttonState.released = false;
+                }
             }
 
             return stateChange;
