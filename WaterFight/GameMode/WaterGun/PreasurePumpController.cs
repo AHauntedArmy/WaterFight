@@ -67,8 +67,7 @@ namespace WaterFight.GameMode.WaterGun
                 this.transform.position += clampedDir;
 
                 // clam the local Y position to not go below 0
-                Vector3 currentLocalPosition = this.transform.localPosition;
-                currentLocalPosition.x = StaticXPosition; // pump seemed to be moving sideways slightly, probably float precision error
+                Vector3 currentLocalPosition = this.transform.localPosition;           
                 currentLocalPosition.y = Mathf.Clamp(currentLocalPosition.y, 0f, 1f);
                 this.transform.localPosition = currentLocalPosition;
 
@@ -83,9 +82,10 @@ namespace WaterFight.GameMode.WaterGun
             } else {
                 Vector3 localPosition = this.transform.localPosition;
                 float currentY = localPosition.y;
-                float pressurePercent = WaterStreamController.PressurePercentage * waterController.WaterSpeed;
+                float pressurePercent = waterController.Settings.WaterSpeedPercentage * waterController.WaterSpeed;
                 currentY = Mathf.MoveTowards(currentY, MaxYPosition * pressurePercent, InterpolateSpeed * Time.deltaTime);
                 localPosition.y = currentY;
+                localPosition.x = StaticXPosition; // pump seemed to be moving sideways slightly, probably float precision error
                 this.transform.localPosition = localPosition;
             }
         }

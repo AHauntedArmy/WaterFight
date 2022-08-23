@@ -29,10 +29,12 @@ namespace WaterFight
 
         private PrefabManager prefabManager;
 
-        void Awake()
+        async void Awake()
         {
             Utilla.Events.GameInitialized += OnGameInitialized;            
             HarmonyPatches.ApplyHarmonyPatches();
+
+            await WaterFight.Config.Load();
         }
 
         void OnEnable()
@@ -66,7 +68,7 @@ namespace WaterFight
         public void OnJoin(string gamemode)
         {
             // if important assets aren't loaded, forcefully disconnect.
-            if(Prefabs.FailedToLoad) {
+            if(Prefabs.FailedToLoad || !WaterFight.Config.Loaded) {
                 PhotonNetwork.Disconnect();
                 return;
             }

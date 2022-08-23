@@ -76,7 +76,7 @@ namespace WaterFight.GameMode
                 view.ObservedComponents.Add(this);
             }
 
-            WaterStreamController.SetMaxWaterPressure(this);
+            UpdateWaterSettings();
         }
 
         public void Start()
@@ -155,7 +155,7 @@ namespace WaterFight.GameMode
                 }
             }
 
-            WaterStreamController.SetMaxWaterPressure(this);
+            UpdateWaterSettings();
         }
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -176,7 +176,7 @@ namespace WaterFight.GameMode
                     CheckRoundEnd();
                 }
 
-                WaterStreamController.SetMaxWaterPressure(this);
+                UpdateWaterSettings();
             } catch { }
         }
 
@@ -370,6 +370,12 @@ namespace WaterFight.GameMode
             }
 
             return false;
+        }
+
+        void UpdateWaterSettings()
+        {
+            float roomSizePercent = (1f / 10f) * (float)PhotonNetwork.PlayerList.Length;
+            Config.WaterSettings.ModifyByPercent(this, roomSizePercent);
         }
     }
 }

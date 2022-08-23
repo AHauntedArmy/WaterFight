@@ -300,5 +300,8 @@
     <Reference Include="websocket-sharp">
       <HintPath>$(GameAssemblyPath)\websocket-sharp.dll</HintPath>
     </Reference>
+	  <Reference Include="Newtonsoft.Json">
+		  <HintPath>$(BepInExAssemblyPath)\Newtonsoft.json.dll</HintPath>
+	  </Reference>
   </ItemGroup>
 </Project>

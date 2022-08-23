@@ -66,6 +66,7 @@ namespace WaterFight.Tools
                 Debug.LogWarning("failed to load supersoaker from the asset bundle");
 
             } else {
+                superSoakerPrefab.SetActive(false);
                 GameObject.DontDestroyOnLoad(superSoakerPrefab);
             }
 

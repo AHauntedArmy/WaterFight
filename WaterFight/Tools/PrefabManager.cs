@@ -91,7 +91,7 @@ namespace WaterFight.Tools
 
             waterGunCosmetic = GameObject.Instantiate(Prefabs.SuperSoakerPrefab);
             waterGunCosmetic.transform.SetParent(handParent.transform, false);
-            waterGunCosmetic.SetActive(false);
+            // waterGunCosmetic.SetActive(false);
             waterGunCosmetic.SetActive(WaterFightPlugin.EnableCosmetics);
 
             yield return null;
@@ -105,12 +105,14 @@ namespace WaterFight.Tools
             
             gorillaPrefabWaterGun = GameObject.Instantiate(Prefabs.SuperSoakerPrefab);
             gorillaPrefabWaterGun.transform.SetParent(gorillaPrefabRightHandOffset.transform, false);
+            gorillaPrefabWaterGun.SetActive(true);
         }
 
         public void RemovePrefabs()
         {
             if (gorillaPrefabWaterGun != null) {
                 GameObject.Destroy(gorillaPrefabWaterGun);
+                gorillaPrefabWaterGun = null;
             }
 
             var hitHandler = gorillaPrefab.GetComponent<WaterFightPlayerController>();

@@ -22,14 +22,16 @@ namespace WaterFight.GameMode.WaterGun
 #if GAME
         private List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>();
         private ParticleSystem.MainModule mainParticleSettings;
+        private WaterSettingsContainer settings = new WaterSettingsContainer();
 
         private float waterSpeed = 0f;
 
         public float WaterSpeed => waterSpeed;
+        public WaterSettingsContainer Settings => settings;
 
         void Awake()
         {
-            this.enabled = false;
+            // this.enabled = false;
             // Debug.Log("water pressure decay rate " + DecayRate);
             // this.DecayRate = MaxSpeed / DecaySeconds;
             // InputEvents.RightController.Trigger += Shoot;
@@ -43,6 +45,18 @@ namespace WaterFight.GameMode.WaterGun
             }
 
             mainParticleSettings = particles.main;
+
+            if (this.gameObject.GetComponentInParent<VRRig>() is VRRig myRig) {
+                if (!myRig.isOfflineVRRig) {
+                    // Debug.Log("we are online, using downloaded config settings");
+                    settings = Config.WaterSettings;
+                }
+
+            } else {
+                Debug.LogError("couldn't find vrrig??");
+            }
+
+            this.enabled = false;
 
         }
 
@@ -60,7 +74,7 @@ namespace WaterFight.GameMode.WaterGun
                 return;
             }
 
-            waterSpeed -= DecayRate * Time.deltaTime;
+            waterSpeed -= settings.WaterDecayRate * Time.deltaTime;
             waterSpeed = Mathf.Max(waterSpeed, 0f);
             // Debug.Log("water speed " + waterSpeed);
             
@@ -113,13 +127,14 @@ namespace WaterFight.GameMode.WaterGun
             return false;
         }
 
-        public void AddWaterPressure(float pressure) => SetWaterPressure(waterSpeed + (pressure * PressureModifier * Time.deltaTime));
+        public void AddWaterPressure(float pressure) => SetWaterPressure(waterSpeed + (pressure * settings.PressureModifier * Time.deltaTime));
         public void SetWaterPressure(float pressure)
         {
-            waterSpeed = Mathf.Min(pressure, currentMaxSpeed);
+            waterSpeed = Mathf.Min(pressure, settings.MaxWaterSpeed);
             mainParticleSettings.startSpeed = waterSpeed;
         }
 
+        /*
         // static stuff
         private const float DecaySeconds = 15f;
         private const float MaxSpeed = 20f;
@@ -151,6 +166,7 @@ namespace WaterFight.GameMode.WaterGun
             pressurePercentage = 1f / currentMaxSpeed;
             DecayRate = currentMaxSpeed / DecaySeconds;
         }
+        */
 #endif
     }
 }
