@@ -1,5 +1,5 @@
 {
-  "waterDecaySeconds": 15.0,
+  "waterDecaySeconds": 1.50,
   "maxWaterSpeed": 20.0,
   "minWaterSpeed": 10.0,
   "maxPressureModifier": 7.0,
