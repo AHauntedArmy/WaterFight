@@ -23,7 +23,7 @@ namespace WaterFight
     [BepInPlugin(PluginInfo.GUID, PluginInfo.Name, PluginInfo.Version)]
     public class WaterFightPlugin : BaseUnityPlugin
     {
-        public const int MaxPlayers = 8;      
+        public const int MaxPlayers = 10;      
         public static bool inRoom = false;
         public static bool EnableCosmetics = true;
 
