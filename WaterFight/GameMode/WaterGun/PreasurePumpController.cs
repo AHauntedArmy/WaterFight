@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Mono.Security.X509.Extensions;
+using Photon.Realtime;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -25,6 +27,7 @@ namespace WaterFight.GameMode.WaterGun
         private const float InterpolateSpeed = 0.1f;
         private const float MaxYPosition = 0.0225f;
         private const float StaticXPosition = -0.0024f;
+        private const float StatiCZPosition = 0f;
 
         void Awake()
         {
@@ -51,6 +54,7 @@ namespace WaterFight.GameMode.WaterGun
         void Update()
         {
             Vector3 currentPosition = this.transform.position;
+            Vector3 localPosition;
             if (grabbingPump) {
                 if (Vector3.Distance(currentPosition, handReference.position) > 0.3f) {
                     grabbingPump = false;
@@ -67,27 +71,29 @@ namespace WaterFight.GameMode.WaterGun
                 this.transform.position += clampedDir;
 
                 // clam the local Y position to not go below 0
-                Vector3 currentLocalPosition = this.transform.localPosition;           
-                currentLocalPosition.y = Mathf.Clamp(currentLocalPosition.y, 0f, 1f);
-                this.transform.localPosition = currentLocalPosition;
+                localPosition = this.transform.localPosition;           
+                localPosition.y = Mathf.Clamp(localPosition.y, 0f, 1f);
 
-                if ((lastLocalPosition - currentLocalPosition).y > 0) {
+                if (lastLocalPosition.y - localPosition.y > 0f) {
                     // Debug.Log("real magnitude " + clampedDir.magnitude / Time.deltaTime);
                     waterController.AddWaterPressure(clampedDir.magnitude / Time.deltaTime);
                 }
 
-                lastLocalPosition = currentLocalPosition;
+                lastLocalPosition = localPosition;
             
             // pump position shows pressure
             } else {
-                Vector3 localPosition = this.transform.localPosition;
+                localPosition = this.transform.localPosition;
                 float currentY = localPosition.y;
                 float pressurePercent = waterController.Settings.WaterSpeedPercentage * waterController.WaterSpeed;
                 currentY = Mathf.MoveTowards(currentY, MaxYPosition * pressurePercent, InterpolateSpeed * Time.deltaTime);
                 localPosition.y = currentY;
-                localPosition.x = StaticXPosition; // pump seemed to be moving sideways slightly, probably float precision error
-                this.transform.localPosition = localPosition;
             }
+
+            // pump seemed to be moving sideways slightly, probably float precision error
+            localPosition.x = StaticXPosition; 
+            localPosition.z = StatiCZPosition;
+            this.transform.localPosition = localPosition;
         }
 
         public bool Grab(bool grabbing)

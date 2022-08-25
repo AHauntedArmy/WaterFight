@@ -7,6 +7,6 @@
     {
         public const string GUID = "com.ahauntedarmy.gorillatag.waterfight";
         public const string Name = "WaterFight";
-        public const string Version = "1.0.1";
+        public const string Version = "1.0.2";
     }
 }

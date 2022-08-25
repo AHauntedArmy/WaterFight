@@ -99,6 +99,7 @@ namespace WaterFight.Tools
 
         public void AttachPrefabs()
         {
+            // Debug.Log("gorilla prefab reference is null " + (gorillaPrefab == null));
             var wfPlayercontroller = gorillaPrefab.AddComponent<WaterFightPlayerController>();
             wfPlayercontroller.LeftHandOffsetReference = gorillaPrefabLeftHandOffset;
             wfPlayercontroller.RightHandOffsetReference = gorillaPrefabRightHandOffset;
@@ -106,6 +107,7 @@ namespace WaterFight.Tools
             gorillaPrefabWaterGun = GameObject.Instantiate(Prefabs.SuperSoakerPrefab);
             gorillaPrefabWaterGun.transform.SetParent(gorillaPrefabRightHandOffset.transform, false);
             gorillaPrefabWaterGun.SetActive(true);
+            gorillaPrefabWaterGun.transform.localPosition = Vector3.zero;
         }
 
         public void RemovePrefabs()

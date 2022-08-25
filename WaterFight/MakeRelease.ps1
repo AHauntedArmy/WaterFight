@@ -5,5 +5,5 @@ $Name = (ls *.csproj).BaseName
 dotnet build -c Release
 mkdir BepInEx\plugins\$Name
 cp bin\Release\netstandard2.0\$Name.dll BepInEx\plugins\$Name\
-Compress-Archive .\BepInEx\ $Name-v1.0.1.zip
+Compress-Archive .\BepInEx\ $Name-v1.0.2.zip
 rmdir .\BepInEx\ -Recurse

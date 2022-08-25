@@ -1,7 +1,10 @@
 # Overview:
-WaterFight is a mod for gorilla tag that indoruces a new gamemode based on times as a kid running during summer, battling each other with water guns, hoses, and, waterballoons. the water gun also acts as a cosmetic holdable in the rest of the game.
+WaterFight is a mod for gorilla tag that indoruces a new gamemode based on times as a kid running around during summer, battling each other with water guns, hoses, and, waterballoons. the water gun also acts as a cosmetic holdable in the rest of the game.
 
 # Guide:
+## How to play:
+grab the pressure pump on your gun and pump it to charge the gun, you have infinite ammo, run around and shoot other gorilla's, when a gorilla is dead, they will have an ice material and deal less damage.
+
 ## The gun is used to visually indicated various player state information.
 - black body colour means you're on a hit cooldown of 1 second, you can still fire water during the cooldown but not deal damage
 - pump location tells you how much water pressure you have
